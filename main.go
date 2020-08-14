@@ -18,12 +18,17 @@ type ParameterDetail struct {
 	AwsParameter *ssm.ParameterMetadata
 }
 
-const region = "sa-east-1"
+var defaultRegion string = "sa-east-1"
 
 func main() {
 
 	valueSearch := flag.String("value", "", "Value to search")
+	region := flag.String("region", "", "Region")
 	flag.Parse()
+
+	if *region == "" {
+		defaultRegion = *region
+	}
 
 	if *valueSearch == "" {
 		fmt.Println("Please insert a value with --value")
@@ -139,7 +144,7 @@ func filterParameters(input []*ssm.ParameterMetadata, valueFilter string) error 
 
 func getSSMService() *ssm.SSM {
 
-	cfg := aws.NewConfig().WithRegion(region)
+	cfg := aws.NewConfig().WithRegion(defaultRegion)
 	cfg.DisableRestProtocolURICleaning = aws.Bool(true)
 	ssmService := ssm.New(session.New(), cfg)
 
